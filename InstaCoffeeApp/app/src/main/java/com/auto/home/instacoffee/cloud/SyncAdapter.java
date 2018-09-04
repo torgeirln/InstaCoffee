@@ -125,7 +125,6 @@ public class SyncAdapter {
                 }
             }
         }
-        Log.d(TAG, "returning: " + parameterRef.getKey());
         return parameterRef;
     }
 }

@@ -14,12 +14,12 @@ public class CloudStructure {
 
     public static class ArduinoCtrl {
         @Exclude
-        public String runBrewVar = "runBrewProses";
+        public String runBrewVar = "runBrewProcess";
 
-        public boolean runBrewProses;
+        public boolean runBrewProcess;
 
         public ArduinoCtrl() {
-            runBrewProses = false;
+            runBrewProcess = false;
         }
     }
 
