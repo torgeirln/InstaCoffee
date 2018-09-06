@@ -7,10 +7,10 @@
 #define BAUD 9600
 
 // Pin assignments
-int aPin = 2;         //IN1: coil a one end
-int bPin = 3;         //IN2: coil b one end
-int aPrimePin = 4;    //IN3: coil aPrime other end of coil a
-int bPrimePin = 5;    //IN4: coil bPrime other end of coil b
+int aPin = 4;         //IN1: coil a one end
+int bPin = 5;         //IN2: coil b one end
+int aPrimePin = 6;    //IN3: coil aPrime other end of coil a
+int bPrimePin = 7;    //IN4: coil bPrime other end of coil b
 
 int currentDeg = 0;
 int btnDeg = 45;
@@ -55,32 +55,34 @@ void loop() {
 
 //initialize rotation anti clockwise
 void initACW(){   
-  aPin = 5;
-  bPin = 4;
-  aPrimePin = 3;
-  bPrimePin = 2;
+  aPin = 7;
+  bPin = 6;
+  aPrimePin = 5;
+  bPrimePin = 4;
 }
 
 //initialize rotation clockwise
 void initCW(){
-  aPin = 2;
-  bPin = 3;
-  aPrimePin = 4;
-  bPrimePin = 5;
+  aPin = 4;
+  bPin = 5;
+  aPrimePin = 6;
+  bPrimePin = 7;
 }
 
 void updateDeg() {
-  if (aPin == 5){
+  if (aPin == 7){
     steps = steps - 8;
   }
-  else if (aPin == 2){
+  else if (aPin == 4){
     steps = steps + 8;
   }
   currentDeg = (360.0 * (steps / 4096.0));
+//  Serial.println(currentDeg);
 }
 
 // Rotate the stepper motor 8 steps
 void rotate() {
+  Serial.println("Rotating eight steps..");
   updateStepperPins(HIGH, LOW, LOW, LOW);
   updateStepperPins(HIGH, HIGH, LOW, LOW);
   updateStepperPins(LOW, HIGH, LOW, LOW);
@@ -88,11 +90,13 @@ void rotate() {
   updateStepperPins(LOW, LOW, HIGH, LOW);
   updateStepperPins(LOW, LOW, HIGH, HIGH);
   updateStepperPins(LOW, LOW, LOW, HIGH);
+  updateStepperPins(HIGH, LOW, LOW, HIGH);
   updateDeg();
 }
 
 // Make the stepper motor press the brew button on coffee machine
 void pressBrewBtn() {
+  // TODO: check for stop command from firebase
   initCW();  
   stepRunning = true;
   while(currentDeg < btnDeg) {
@@ -110,6 +114,7 @@ void resetStepper() {
     rotate();
   }
   stepRunning = false;
+  ESPSerial.println('f');       // Notify firebase that process is finished
 }
 
 void updateStepperPins(uint8_t aPinVal, uint8_t bPinVal, uint8_t aPrimePinVal, uint8_t bPrimePinVal) {

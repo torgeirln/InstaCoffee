@@ -17,7 +17,6 @@ bool isRunning;
 
 void setup() {
   Serial.begin(9600);
-
   // connect to wifi.
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 //  Serial.print("connecting");
@@ -34,7 +33,10 @@ void setup() {
 }
 
 void loop() {
-  // check run command
+  if (isRunning) {
+    getStatus();  
+  }
+  // check run command on firebase
   bool run = Firebase.getBool(RUN_PATH);
   if (run && !isRunning) {
     Serial.print('r');    // run
@@ -52,7 +54,17 @@ void loop() {
     return;
   }
   delay(1000);
+}
 
-  // TODO: Listen for error in InstaCoffeeCtrl and publish to firebase
+// Check for updates from main program running on ATmega processor
+void getStatus(){
+  while(Serial.available()) {
+    char command = Serial.read();
+    if (command == 'f') {         // if task finished
+      isRunning = false;
+      Firebase.setBool(FB_RUNNING_PATH, isRunning);
+    }
+    // TODO: Listen for error in InstaCoffeeCtrl and publish to firebase
+  }
 }
 
